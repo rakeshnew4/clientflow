@@ -1,0 +1,130 @@
+CREATE TABLE clients (
+  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT,
+  company TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'active',
+  last_contact TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE follow_ups (
+  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_id VARCHAR NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  scheduled_date TIMESTAMP NOT NULL,
+  completed BOOLEAN DEFAULT FALSE,
+  completed_at TIMESTAMP,
+  type TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE tasks (
+  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_id VARCHAR,
+  title TEXT NOT NULL,
+  description TEXT,
+  due_date TIMESTAMP,
+  completed BOOLEAN DEFAULT FALSE,
+  completed_at TIMESTAMP,
+  priority TEXT DEFAULT 'medium',
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE interactions (
+  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_id VARCHAR NOT NULL,
+  type TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+
+CREATE TABLE supermarkets (
+  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  location TEXT NOT NULL,
+  city TEXT NOT NULL,
+  region TEXT NOT NULL,
+  size TEXT NOT NULL,
+  type TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+
+CREATE TABLE sales (
+  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+  supermarket_id VARCHAR NOT NULL,
+  date TIMESTAMP NOT NULL,
+  category TEXT NOT NULL,
+  product TEXT NOT NULL,
+  quantity INTEGER NOT NULL,
+  unit_price INTEGER NOT NULL,
+  total_amount INTEGER NOT NULL,
+  payment_method TEXT NOT NULL,
+  customer_age INTEGER,
+  customer_gender TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+
+CREATE TABLE inventory (
+  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+  supermarket_id VARCHAR NOT NULL,
+  product TEXT NOT NULL,
+  category TEXT NOT NULL,
+  current_stock INTEGER NOT NULL,
+  minimum_stock INTEGER NOT NULL,
+  last_restocked TIMESTAMP,
+  supplier TEXT NOT NULL,
+  cost_price INTEGER NOT NULL,
+  selling_price INTEGER NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+
+CREATE TABLE customer_traffic (
+  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+  supermarket_id VARCHAR NOT NULL,
+  date TIMESTAMP NOT NULL,
+  hour INTEGER NOT NULL,
+  visitor_count INTEGER NOT NULL,
+  avg_transaction_value INTEGER NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+
+
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+
+
+
+
+ALTER TABLE follow_ups
+  ADD CONSTRAINT fk_followups_client
+  FOREIGN KEY (client_id) REFERENCES clients(id);
+
+ALTER TABLE tasks
+  ADD CONSTRAINT fk_tasks_client
+  FOREIGN KEY (client_id) REFERENCES clients(id);
+
+ALTER TABLE interactions
+  ADD CONSTRAINT fk_interactions_client
+  FOREIGN KEY (client_id) REFERENCES clients(id);
+
+ALTER TABLE sales
+  ADD CONSTRAINT fk_sales_supermarket
+  FOREIGN KEY (supermarket_id) REFERENCES supermarkets(id);
+
+ALTER TABLE inventory
+  ADD CONSTRAINT fk_inventory_supermarket
+  FOREIGN KEY (supermarket_id) REFERENCES supermarkets(id);
+
+ALTER TABLE customer_traffic
+  ADD CONSTRAINT fk_traffic_supermarket
+  FOREIGN KEY (supermarket_id) REFERENCES supermarkets(id);

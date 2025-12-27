@@ -1,0 +1,8 @@
+npm run build
+pm2 start ./dist/public/index.html --name datainsights2 -f
+pm2 save
+pm2 startup
+
+
+
+npm run build 
